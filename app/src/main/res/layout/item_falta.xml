@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@color/white"
         android:padding="20dp">
 
         <!-- Header da disciplina -->
@@ -56,12 +57,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/faltas_acima_limite"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:background="@drawable/status_badge_acima_limite"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp" />
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:layout_gravity="center_vertical"
+                android:textAllCaps="true" />
 
         </LinearLayout>
 

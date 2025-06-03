@@ -34,10 +34,10 @@
     <string name="status_cursando">Cursando</string>
     <string name="status_pendente">Pendente</string>
     
-    <!-- Faltas -->
-    <string name="faltas_dentro_limite">Dentro do limite</string>
-    <string name="faltas_proximo_limite">Próximo ao limite</string>
-    <string name="faltas_acima_limite">Acima do limite</string>
+    <!-- Status de Faltas -->
+    <string name="faltas_dentro_limite">DENTRO DO LIMITE</string>
+    <string name="faltas_proximo_limite">PRÓXIMO AO LIMITE</string>
+    <string name="faltas_acima_limite">ACIMA DO LIMITE</string>
     
     <!-- Compartilhamento -->
     <string name="compartilhar_boletim">Compartilhar Boletim</string>

@@ -201,25 +201,61 @@ public class Repository {
         return falta;
     }
 
+    // Método para forçar reset dos dados (para debug)
+    public void forceResetData() {
+        openDatabase();
+        
+        // Limpar todas as notas e faltas
+        database.delete(DatabaseHelper.TABLE_FALTAS, null, null);
+        database.delete(DatabaseHelper.TABLE_NOTAS, null, null);
+        
+        closeDatabase();
+        
+        // Repovoar
+        populateInitialData();
+    }
+
     // Método para popular dados de exemplo
     public void populateInitialData() {
         openDatabase();
+        
+        // Verificar se já existem dados para 2025.1
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + DatabaseHelper.TABLE_NOTAS + 
+                                         " WHERE " + DatabaseHelper.COL_NOTA_PERIODO + " = '2025.1'", null);
+        cursor.moveToFirst();
+        int notasCount = cursor.getInt(0);
+        cursor.close();
+        
+        cursor = database.rawQuery("SELECT COUNT(*) FROM " + DatabaseHelper.TABLE_FALTAS + 
+                                  " WHERE " + DatabaseHelper.COL_FALTA_PERIODO + " = '2025.1'", null);
+        cursor.moveToFirst();
+        int faltasCount = cursor.getInt(0);
+        cursor.close();
+        
+        // Se já existem dados, não inserir novamente
+        if (notasCount > 0 && faltasCount > 0) {
+            closeDatabase();
+            return;
+        }
         
         // Inserir notas de exemplo para o período 2025.1
         insertNotaExample(1, "2025.1", 10.0, 10.0, null, "CURSANDO");
         insertNotaExample(2, "2025.1", 6.0, null, null, "CURSANDO");
         insertNotaExample(3, "2025.1", null, null, null, "CURSANDO");
-        insertNotaExample(5, "2025.1", 8.0, null, null, "CURSANDO");
+        insertNotaExample(4, "2025.1", 8.0, null, null, "CURSANDO");
+        insertNotaExample(5, "2025.1", 7.5, null, null, "CURSANDO");
         
         // Inserir faltas de exemplo
         insertFaltaExample(1, "2025.1", 0, 12, 0, 4, 0, 0);
         insertFaltaExample(2, "2025.1", 0, 10, 2, 4, 2, 0);
         insertFaltaExample(3, "2025.1", 0, 0, 2, 0, 0, 0);
+        insertFaltaExample(4, "2025.1", 0, 8, 1, 2, 1, 0);
         insertFaltaExample(5, "2025.1", 0, 5, 2, 1, 2, 0);
         
         closeDatabase();
     }
 
+    // Método auxiliar para inserir notas de exemplo
     private void insertNotaExample(int disciplinaId, String periodo, Double nt1, Double nt2, Double nt3, String situacao) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COL_NOTA_DISCIPLINA_ID, disciplinaId);
@@ -232,6 +268,7 @@ public class Repository {
         database.insert(DatabaseHelper.TABLE_NOTAS, null, values);
     }
 
+    // Método auxiliar para inserir faltas de exemplo
     private void insertFaltaExample(int disciplinaId, String periodo, int jan, int fev, int mar, int abr, int mai, int jun) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COL_FALTA_DISCIPLINA_ID, disciplinaId);
@@ -245,8 +282,65 @@ public class Repository {
         
         int total = jan + fev + mar + abr + mai + jun;
         values.put(DatabaseHelper.COL_FALTA_TOTAL, total);
-        values.put(DatabaseHelper.COL_FALTA_PERCENTUAL, (total / 75.0) * 100); // Assumindo 75h
+        
+        // Corrigir cálculo do percentual - considerando 75h como padrão
+        double percentual = ((double) total / 75.0) * 100;
+        values.put(DatabaseHelper.COL_FALTA_PERCENTUAL, percentual);
         
         database.insert(DatabaseHelper.TABLE_FALTAS, null, values);
+    }
+
+    // Método para resetar dados (útil para desenvolvimento/teste)
+    public void resetInitialData() {
+        openDatabase();
+        
+        // Limpar dados existentes
+        database.delete(DatabaseHelper.TABLE_FALTAS, null, null);
+        database.delete(DatabaseHelper.TABLE_NOTAS, null, null);
+        
+        closeDatabase();
+        
+        // Repovoar dados
+        populateInitialData();
+    }
+
+    // Método para verificar se dados específicos existem
+    public boolean hasDataForPeriodo(String periodo) {
+        openDatabase();
+        
+        String query = "SELECT COUNT(*) FROM " + DatabaseHelper.TABLE_NOTAS + 
+                      " WHERE " + DatabaseHelper.COL_NOTA_PERIODO + " = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{periodo});
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        
+        closeDatabase();
+        return count > 0;
+    }
+
+    // Método para atualizar percentuais de faltas existentes
+    public void atualizarPercentuaisFaltas() {
+        openDatabase();
+        
+        String query = "UPDATE " + DatabaseHelper.TABLE_FALTAS + 
+                      " SET " + DatabaseHelper.COL_FALTA_PERCENTUAL + " = " +
+                      "CAST(" + DatabaseHelper.COL_FALTA_TOTAL + " AS REAL) / 75.0 * 100";
+        
+        database.execSQL(query);
+        closeDatabase();
+    }
+
+    // Método para obter faltas com cálculo correto
+    public List<Falta> getFaltasComCalculoCorreto(String periodo) {
+        List<Falta> faltas = getFaltasByPeriodo(periodo);
+        
+        for (Falta falta : faltas) {
+            // Recalcular percentual com a regra correta
+            falta.calcularTotalFaltas();
+            falta.calcularPercentual(75.0); // CH padrão
+        }
+        
+        return faltas;
     }
 }

@@ -59,21 +59,42 @@ public class Falta {
         this.totalFaltas = janeiro + fevereiro + marco + abril + maio + junho;
     }
 
-    // Método para calcular percentual (assumindo 75h de carga horária)
+    // Método para calcular percentual
     public void calcularPercentual(double cargaHoraria) {
         if (cargaHoraria > 0) {
-            this.percentual = (totalFaltas / cargaHoraria) * 100;
+            this.percentual = ((double) totalFaltas / cargaHoraria) * 100;
+        } else {
+            this.percentual = 0.0;
         }
     }
 
-    // Método para verificar status das faltas
+    // Método para obter status das faltas
     public String getStatusFaltas() {
-        if (percentual <= 15) {
+        if (percentual < 20.0) {
             return "DENTRO_LIMITE";
-        } else if (percentual <= 20) {
+        } else if (percentual < 25.0) {
             return "PROXIMO_LIMITE";
         } else {
             return "ACIMA_LIMITE";
+        }
+    }
+
+    // Método para verificar se pode reprovar por falta
+    public boolean podeReprovarPorFalta() {
+        return percentual >= 25.0;
+    }
+
+    // Método para obter descrição do status
+    public String getDescricaoStatus() {
+        switch (getStatusFaltas()) {
+            case "DENTRO_LIMITE":
+                return "Dentro do limite permitido";
+            case "PROXIMO_LIMITE":
+                return "Próximo ao limite (25%)";
+            case "ACIMA_LIMITE":
+                return "Acima do limite - Reprovação por falta";
+            default:
+                return "Status indefinido";
         }
     }
 }

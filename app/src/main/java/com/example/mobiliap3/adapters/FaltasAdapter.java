@@ -1,143 +1,135 @@
 package com.example.mobiliap3.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobiliap3.R;
-import com.example.mobiliap3.fragments.FaltasFragment.FaltaComDisciplina;
+import com.example.mobiliap3.models.Disciplina;
+import com.example.mobiliap3.models.Falta;
 
 import java.util.List;
 
 public class FaltasAdapter extends RecyclerView.Adapter<FaltasAdapter.FaltaViewHolder> {
-    private List<FaltaComDisciplina> faltasComDisciplinas;
+    
+    private List<Falta> faltas;
+    private List<Disciplina> disciplinas;
     private Context context;
 
-    public FaltasAdapter(List<FaltaComDisciplina> faltasComDisciplinas, Context context) {
-        this.faltasComDisciplinas = faltasComDisciplinas;
+    public FaltasAdapter(Context context, List<Falta> faltas, List<Disciplina> disciplinas) {
         this.context = context;
+        this.faltas = faltas;
+        this.disciplinas = disciplinas;
     }
 
     @NonNull
     @Override
     public FaltaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_falta, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_falta, parent, false);
         return new FaltaViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FaltaViewHolder holder, int position) {
-        FaltaComDisciplina item = faltasComDisciplinas.get(position);
-        holder.bind(item);
+        Falta falta = faltas.get(position);
+        Disciplina disciplina = getDisciplinaById(falta.getDisciplinaId());
+        
+        if (disciplina != null) {
+            holder.tvDisciplinaNome.setText(disciplina.getNome());
+            holder.tvDisciplinaCodigo.setText(disciplina.getCodigo());
+        }
+        
+        // Configurar faltas mensais
+        holder.tvJaneiro.setText(String.valueOf(falta.getJaneiro()));
+        holder.tvFevereiro.setText(String.valueOf(falta.getFevereiro()));
+        holder.tvMarco.setText(String.valueOf(falta.getMarco()));
+        holder.tvAbril.setText(String.valueOf(falta.getAbril()));
+        holder.tvMaio.setText(String.valueOf(falta.getMaio()));
+        holder.tvJunho.setText(String.valueOf(falta.getJunho()));
+        
+        // Configurar totais
+        holder.tvTotalFaltas.setText(String.valueOf(falta.getTotalFaltas()));
+        holder.tvPercentual.setText(String.format("%.1f%%", falta.getPercentual()));
+        
+        // Configurar status com background e texto corretos
+        configurarStatusFaltas(holder.tvStatusFaltas, falta.getStatusFaltas());
+    }
+
+    private void configurarStatusFaltas(TextView textView, String status) {
+        // SEMPRE manter o texto branco
+        textView.setTextColor(Color.WHITE);
+        
+        // Mudar o BACKGROUND baseado no status usando os drawables
+        switch (status) {
+            case "DENTRO_LIMITE":
+                textView.setText(context.getString(R.string.faltas_dentro_limite));
+                textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_dentro_limite));
+                break;
+            case "PROXIMO_LIMITE":
+                textView.setText(context.getString(R.string.faltas_proximo_limite));
+                textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_proximo_limite));
+                break;
+            case "ACIMA_LIMITE":
+                textView.setText(context.getString(R.string.faltas_acima_limite));
+                textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_acima_limite));
+                break;
+            default:
+                textView.setText("STATUS INDEFINIDO");
+                textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_acima_limite));
+                break;
+        }
+        
+        // Adicionar padding e cantos arredondados programaticamente
+        textView.setPadding(24, 12, 24, 12);
+    }
+
+    private Disciplina getDisciplinaById(int id) {
+        for (Disciplina disciplina : disciplinas) {
+            if (disciplina.getId() == id) {
+                return disciplina;
+            }
+        }
+        return null;
     }
 
     @Override
     public int getItemCount() {
-        return faltasComDisciplinas.size();
+        return faltas.size();
     }
 
-    class FaltaViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvDisciplinaNome;
-        private TextView tvDisciplinaCodigo;
-        private TextView tvJaneiro, tvFevereiro, tvMarco, tvAbril, tvMaio, tvJunho;
-        private TextView tvTotalFaltas;
-        private TextView tvPercentual;
-        private TextView tvStatus;
+    public void updateData(List<Falta> novasFaltas) {
+        this.faltas = novasFaltas;
+        notifyDataSetChanged();
+    }
+
+    static class FaltaViewHolder extends RecyclerView.ViewHolder {
+        TextView tvDisciplinaNome, tvDisciplinaCodigo, tvStatusFaltas;
+        TextView tvJaneiro, tvFevereiro, tvMarco, tvAbril, tvMaio, tvJunho;
+        TextView tvTotalFaltas, tvPercentual;
 
         public FaltaViewHolder(@NonNull View itemView) {
             super(itemView);
+            
             tvDisciplinaNome = itemView.findViewById(R.id.tv_disciplina_nome_falta);
             tvDisciplinaCodigo = itemView.findViewById(R.id.tv_disciplina_codigo_falta);
+            tvStatusFaltas = itemView.findViewById(R.id.tv_status_faltas);
+            
             tvJaneiro = itemView.findViewById(R.id.tv_janeiro);
             tvFevereiro = itemView.findViewById(R.id.tv_fevereiro);
             tvMarco = itemView.findViewById(R.id.tv_marco);
             tvAbril = itemView.findViewById(R.id.tv_abril);
             tvMaio = itemView.findViewById(R.id.tv_maio);
             tvJunho = itemView.findViewById(R.id.tv_junho);
+            
             tvTotalFaltas = itemView.findViewById(R.id.tv_total_faltas_item);
             tvPercentual = itemView.findViewById(R.id.tv_percentual_item);
-            tvStatus = itemView.findViewById(R.id.tv_status_faltas);
-        }
-
-        public void bind(FaltaComDisciplina item) {
-            tvDisciplinaNome.setText(item.getDisciplina().getNome());
-            tvDisciplinaCodigo.setText(item.getDisciplina().getCodigo());
-            
-            // Configurar faltas por mês
-            tvJaneiro.setText(String.valueOf(item.getFalta().getJaneiro()));
-            tvFevereiro.setText(String.valueOf(item.getFalta().getFevereiro()));
-            tvMarco.setText(String.valueOf(item.getFalta().getMarco()));
-            tvAbril.setText(String.valueOf(item.getFalta().getAbril()));
-            tvMaio.setText(String.valueOf(item.getFalta().getMaio()));
-            tvJunho.setText(String.valueOf(item.getFalta().getJunho()));
-            
-            // Total e percentual
-            tvTotalFaltas.setText(String.valueOf(item.getFalta().getTotalFaltas()));
-            tvPercentual.setText(String.format("%.1f%%", item.getFalta().getPercentual()));
-            
-            // Status das faltas
-            String status = item.getFalta().getStatusFaltas();
-            String statusText = getStatusText(status);
-            tvStatus.setText(statusText);
-            configurarCorStatus(tvStatus, status);
-            configurarCorPercentual(tvPercentual, status);
-        }
-
-        private String getStatusText(String status) {
-            switch (status) {
-                case "DENTRO_LIMITE":
-                    return context.getString(R.string.faltas_dentro_limite);
-                case "PROXIMO_LIMITE":
-                    return context.getString(R.string.faltas_proximo_limite);
-                case "ACIMA_LIMITE":
-                    return context.getString(R.string.faltas_acima_limite);
-                default:
-                    return status;
-            }
-        }
-
-        private void configurarCorStatus(TextView textView, String status) {
-            int color;
-            switch (status) {
-                case "DENTRO_LIMITE":
-                    color = context.getColor(R.color.accent_green);
-                    break;
-                case "PROXIMO_LIMITE":
-                    color = context.getColor(R.color.accent_orange);
-                    break;
-                case "ACIMA_LIMITE":
-                    color = context.getColor(R.color.accent_red);
-                    break;
-                default:
-                    color = context.getColor(R.color.gray_600);
-                    break;
-            }
-            textView.setTextColor(color);
-        }
-
-        private void configurarCorPercentual(TextView textView, String status) {
-            int color;
-            switch (status) {
-                case "DENTRO_LIMITE":
-                    color = context.getColor(R.color.accent_green);
-                    break;
-                case "PROXIMO_LIMITE":
-                    color = context.getColor(R.color.accent_orange);
-                    break;
-                case "ACIMA_LIMITE":
-                    color = context.getColor(R.color.accent_red);
-                    break;
-                default:
-                    color = context.getColor(R.color.gray_800);
-                    break;
-            }
-            textView.setTextColor(color);
         }
     }
 }

@@ -47,6 +47,9 @@ public class FaltasFragment extends Fragment {
     private void initData() {
         repository = new Repository(getContext());
         prefsManager = new PreferencesManager(getContext());
+        
+        // Forçar população dos dados para debug
+        repository.populateInitialData();
     }
 
     private void loadFaltas() {
@@ -54,39 +57,20 @@ public class FaltasFragment extends Fragment {
         List<Falta> faltas = repository.getFaltasByPeriodo(periodoAtual);
         List<Disciplina> disciplinas = repository.getAllDisciplinas();
         
-        // Combinar faltas com disciplinas
-        List<FaltaComDisciplina> faltasComDisciplinas = new ArrayList<>();
-        for (Falta falta : faltas) {
-            Disciplina disciplina = findDisciplinaById(disciplinas, falta.getDisciplinaId());
-            if (disciplina != null) {
-                faltasComDisciplinas.add(new FaltaComDisciplina(falta, disciplina));
-            }
+        // Debug: verificar se dados estão sendo carregados
+        android.util.Log.d("FaltasFragment", "Período: " + periodoAtual);
+        android.util.Log.d("FaltasFragment", "Faltas encontradas: " + faltas.size());
+        android.util.Log.d("FaltasFragment", "Disciplinas encontradas: " + disciplinas.size());
+        
+        // Se não há dados, tentar forçar reset
+        if (faltas.isEmpty()) {
+            android.util.Log.d("FaltasFragment", "Forçando reset dos dados...");
+            repository.forceResetData();
+            faltas = repository.getFaltasByPeriodo(periodoAtual);
         }
         
-        faltasAdapter = new FaltasAdapter(faltasComDisciplinas, getContext());
+        // Corrigir construtor: Context, List<Falta>, List<Disciplina>
+        faltasAdapter = new FaltasAdapter(getContext(), faltas, disciplinas);
         recyclerViewFaltas.setAdapter(faltasAdapter);
-    }
-
-    private Disciplina findDisciplinaById(List<Disciplina> disciplinas, int id) {
-        for (Disciplina disciplina : disciplinas) {
-            if (disciplina.getId() == id) {
-                return disciplina;
-            }
-        }
-        return null;
-    }
-
-    // Classe auxiliar para combinar Falta e Disciplina
-    public static class FaltaComDisciplina {
-        private Falta falta;
-        private Disciplina disciplina;
-
-        public FaltaComDisciplina(Falta falta, Disciplina disciplina) {
-            this.falta = falta;
-            this.disciplina = disciplina;
-        }
-
-        public Falta getFalta() { return falta; }
-        public Disciplina getDisciplina() { return disciplina; }
     }
 }

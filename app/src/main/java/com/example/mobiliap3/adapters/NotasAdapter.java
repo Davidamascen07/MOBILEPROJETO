@@ -2,12 +2,14 @@ package com.example.mobiliap3.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobiliap3.R;
@@ -76,7 +78,7 @@ public class NotasAdapter extends RecyclerView.Adapter<NotasAdapter.NotaViewHold
             
             // Configurar situação
             tvSituacao.setText(item.getNota().getSituacao());
-            configurarCorSituacao(tvSituacao, item.getNota().getSituacao());
+            configurarStatusSituacao(tvSituacao, item.getNota().getSituacao());
             
             // Click listener para Intent com extras
             itemView.setOnClickListener(v -> {
@@ -89,23 +91,29 @@ public class NotasAdapter extends RecyclerView.Adapter<NotasAdapter.NotaViewHold
             });
         }
 
-        private void configurarCorSituacao(TextView textView, String situacao) {
-            int color;
+        private void configurarStatusSituacao(TextView textView, String situacao) {
+            // SEMPRE manter o texto branco
+            textView.setTextColor(Color.WHITE);
+            
+            // Mudar o BACKGROUND baseado na situação usando os drawables
             switch (situacao) {
+                case "CURSANDO":
+                    textView.setText("CURSANDO");
+                    textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_cursando));
+                    break;
                 case "APROVADO":
-                    color = context.getColor(R.color.accent_green);
+                    textView.setText("APROVADO");
+                    textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_aprovado));
                     break;
                 case "REPROVADO":
-                    color = context.getColor(R.color.accent_red);
-                    break;
-                case "CURSANDO":
-                    color = context.getColor(R.color.primary_blue);
+                    textView.setText("REPROVADO");
+                    textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_reprovado));
                     break;
                 default:
-                    color = context.getColor(R.color.gray_600);
+                    textView.setText("INDEFINIDO");
+                    textView.setBackground(ContextCompat.getDrawable(context, R.drawable.status_badge_cursando));
                     break;
             }
-            textView.setTextColor(color);
         }
     }
 }

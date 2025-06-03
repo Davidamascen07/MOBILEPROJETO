@@ -61,10 +61,11 @@
                 android:text="CURSANDO"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:background="@drawable/status_badge_cursando"
                 android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp" />
+                android:paddingVertical="6dp"
+                android:textAllCaps="true" />
 
         </LinearLayout>
 

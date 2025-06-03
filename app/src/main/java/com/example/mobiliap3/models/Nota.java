@@ -51,10 +51,45 @@ public class Nota {
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }
 
-    // Método utilitário para calcular média
+    // Método utilitário para calcular média - MELHORADO
     public void calcularMedia() {
         if (nt1 != null && nt2 != null && nt3 != null) {
             this.mediaFinal = (nt1 + nt2 + nt3) / 3;
+        } else if (nt1 != null && nt2 != null) {
+            // Média parcial com duas notas
+            this.mediaFinal = (nt1 + nt2) / 2;
         }
+    }
+
+    // Método para calcular nota final considerando NAF
+    public void calcularNotaFinal() {
+        if (mediaFinal != null) {
+            if (mediaFinal >= 7.0) {
+                this.notaFinal = mediaFinal;
+            } else if (naf != null && mediaFinal >= 4.0) {
+                // Média entre média final e NAF
+                this.notaFinal = (mediaFinal + naf) / 2;
+            } else {
+                this.notaFinal = mediaFinal;
+            }
+        }
+    }
+
+    // Método para determinar situação baseada na nota
+    public void determinarSituacao() {
+        if (notaFinal == null) {
+            this.situacao = "CURSANDO";
+        } else if (notaFinal >= 7.0) {
+            this.situacao = "APROVADO";
+        } else if (notaFinal >= 5.0) {
+            this.situacao = "APROVADO";
+        } else {
+            this.situacao = "REPROVADO";
+        }
+    }
+
+    // Método para verificar se precisa de NAF
+    public boolean precisaNaf() {
+        return mediaFinal != null && mediaFinal >= 4.0 && mediaFinal < 7.0;
     }
 }

@@ -11,7 +11,7 @@ import com.example.mobiliap3.models.Disciplina;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "mobiliap3.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2; // Incrementar versão para forçar recriação
 
     // Tabela Usuarios
     public static final String TABLE_USUARIOS = "usuarios";
@@ -127,10 +127,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void insertInitialData(SQLiteDatabase db) {
+        // Verificar se já existem dados antes de inserir
+        if (hasInitialData(db)) {
+            return; // Dados já existem, não inserir novamente
+        }
+        
         // Inserir usuário padrão
         ContentValues userValues = new ContentValues();
         userValues.put(COL_USER_NOME, "David Damásceño da Frota");
-        userValues.put(COL_USER_MATRICULA, "20241234567");
+        userValues.put(COL_USER_MATRICULA, "2810000317");
         userValues.put(COL_USER_CURSO, "Sistema de Informação - Bacharelado");
         userValues.put(COL_USER_SENHA, "123456");
         db.insert(TABLE_USUARIOS, null, userValues);
@@ -141,6 +146,85 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         insertDisciplina(db, "FIED017", "TRABALHO DE CONCLUSÃO DE CURSO II", 5, 75.0);
         insertDisciplina(db, "SINF065", "ESTÁGIO SUPERVISIONADO II", 10, 150.0);
         insertDisciplina(db, "SINF066", "TÓPICOS ESPECIAIS EM ENGENHARIA DE SOFTWARE", 5, 75.0);
+        
+        // Inserir dados de exemplo (notas e faltas)
+        insertExampleData(db);
+    }
+
+    // Método para inserir dados de exemplo (notas e faltas)
+    private void insertExampleData(SQLiteDatabase db) {
+        // Inserir notas de exemplo para o período 2025.1 (usando IDs corretos)
+        insertNotaExample(db, 1, "2025.1", 10.0, 10.0, null, "CURSANDO");
+        insertNotaExample(db, 2, "2025.1", 6.0, null, null, "CURSANDO");
+        insertNotaExample(db, 3, "2025.1", null, null, null, "CURSANDO");
+        insertNotaExample(db, 4, "2025.1", 8.0, null, null, "CURSANDO");
+        insertNotaExample(db, 5, "2025.1", 7.5, null, null, "CURSANDO");
+        
+        // Inserir faltas de exemplo (usando IDs corretos)
+        insertFaltaExample(db, 1, "2025.1", 0, 12, 0, 4, 0, 0);
+        insertFaltaExample(db, 2, "2025.1", 0, 10, 2, 4, 2, 0);
+        insertFaltaExample(db, 3, "2025.1", 0, 0, 2, 0, 0, 0);
+        insertFaltaExample(db, 4, "2025.1", 0, 8, 1, 2, 1, 0);
+        insertFaltaExample(db, 5, "2025.1", 0, 5, 2, 1, 2, 0);
+    }
+
+    // Método auxiliar para inserir notas de exemplo
+    private void insertNotaExample(SQLiteDatabase db, int disciplinaId, String periodo, Double nt1, Double nt2, Double nt3, String situacao) {
+        ContentValues values = new ContentValues();
+        values.put(COL_NOTA_DISCIPLINA_ID, disciplinaId);
+        values.put(COL_NOTA_PERIODO, periodo);
+        if (nt1 != null) values.put(COL_NOTA_NT1, nt1);
+        if (nt2 != null) values.put(COL_NOTA_NT2, nt2);
+        if (nt3 != null) values.put(COL_NOTA_NT3, nt3);
+        values.put(COL_NOTA_SITUACAO, situacao);
+        
+        db.insert(TABLE_NOTAS, null, values);
+    }
+
+    // Método auxiliar para inserir faltas de exemplo
+    private void insertFaltaExample(SQLiteDatabase db, int disciplinaId, String periodo, int jan, int fev, int mar, int abr, int mai, int jun) {
+        ContentValues values = new ContentValues();
+        values.put(COL_FALTA_DISCIPLINA_ID, disciplinaId);
+        values.put(COL_FALTA_PERIODO, periodo);
+        values.put(COL_FALTA_JANEIRO, jan);
+        values.put(COL_FALTA_FEVEREIRO, fev);
+        values.put(COL_FALTA_MARCO, mar);
+        values.put(COL_FALTA_ABRIL, abr);
+        values.put(COL_FALTA_MAIO, mai);
+        values.put(COL_FALTA_JUNHO, jun);
+        
+        int total = jan + fev + mar + abr + mai + jun;
+        values.put(COL_FALTA_TOTAL, total);
+        
+        // Corrigir cálculo do percentual - considerando 75h como padrão
+        double percentual = ((double) total / 75.0) * 100;
+        values.put(COL_FALTA_PERCENTUAL, percentual);
+        
+        db.insert(TABLE_FALTAS, null, values);
+    }
+
+    // Método para verificar se os dados iniciais já existem
+    private boolean hasInitialData(SQLiteDatabase db) {
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_USUARIOS, null);
+        cursor.moveToFirst();
+        int userCount = cursor.getInt(0);
+        cursor.close();
+        
+        cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_DISCIPLINAS, null);
+        cursor.moveToFirst();
+        int disciplinaCount = cursor.getInt(0);
+        cursor.close();
+        
+        // Se existem usuários E disciplinas, dados já foram inseridos
+        return userCount > 0 && disciplinaCount > 0;
+    }
+
+    // Método público para verificar se dados já existem (para usar no Repository)
+    public boolean hasData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean hasData = hasInitialData(db);
+        db.close();
+        return hasData;
     }
 
     private void insertDisciplina(SQLiteDatabase db, String codigo, String nome, int creditos, double ch) {
@@ -152,15 +236,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_DISCIPLINAS, null, values);
     }
 
-    // Método para autenticar usuário
+    // Método para autenticar usuário (com suporte a matriculas antigas)
     public Usuario autenticarUsuario(String matricula, String senha) {
         SQLiteDatabase db = this.getReadableDatabase();
         Usuario usuario = null;
 
         String query = "SELECT * FROM " + TABLE_USUARIOS + 
-                      " WHERE " + COL_USER_MATRICULA + "=? AND " + COL_USER_SENHA + "=?";
+                      " WHERE (" + COL_USER_MATRICULA + "=? OR " + COL_USER_MATRICULA + "=?) AND " + COL_USER_SENHA + "=?";
         
-        Cursor cursor = db.rawQuery(query, new String[]{matricula, senha});
+        // Tentar com ambas as matrículas (nova e antiga)
+        Cursor cursor = db.rawQuery(query, new String[]{matricula, "20241234567", senha});
         
         if (cursor.moveToFirst()) {
             usuario = new Usuario();
@@ -168,10 +253,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             usuario.setNome(cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_NOME)));
             usuario.setMatricula(cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_MATRICULA)));
             usuario.setCurso(cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_CURSO)));
+            
+            // Se logou com matrícula antiga, atualizar para nova
+            if ("20241234567".equals(usuario.getMatricula())) {
+                atualizarMatriculaUsuario(db, usuario.getId(), "2810000317");
+                usuario.setMatricula("2810000317");
+            }
         }
         
         cursor.close();
         db.close();
         return usuario;
+    }
+
+    // Método auxiliar para atualizar matrícula
+    private void atualizarMatriculaUsuario(SQLiteDatabase db, int userId, String novaMatricula) {
+        ContentValues values = new ContentValues();
+        values.put(COL_USER_MATRICULA, novaMatricula);
+        db.update(TABLE_USUARIOS, values, COL_USER_ID + "=?", new String[]{String.valueOf(userId)});
+    }
+
+    // Método para atualizar ou criar usuário com nova matrícula
+    public void atualizarUsuario() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        
+        // Verificar se usuário com nova matrícula já existe
+        String checkQuery = "SELECT COUNT(*) FROM " + TABLE_USUARIOS + 
+                           " WHERE " + COL_USER_MATRICULA + "=?";
+        Cursor cursor = db.rawQuery(checkQuery, new String[]{"2810000317"});
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        
+        if (count == 0) {
+            // Atualizar matrícula existente ou inserir novo usuário
+            ContentValues userValues = new ContentValues();
+            userValues.put(COL_USER_NOME, "David Damásceño da Frota");
+            userValues.put(COL_USER_MATRICULA, "2810000317");
+            userValues.put(COL_USER_CURSO, "Sistema de Informação - Bacharelado");
+            userValues.put(COL_USER_SENHA, "123456");
+            
+            // Tentar atualizar primeiro
+            int rowsAffected = db.update(TABLE_USUARIOS, userValues, 
+                                       COL_USER_MATRICULA + "=?", 
+                                       new String[]{"20241234567"});
+            
+            // Se não atualizou nenhuma linha, inserir novo usuário
+            if (rowsAffected == 0) {
+                db.insert(TABLE_USUARIOS, null, userValues);
+            }
+        }
+        
+        db.close();
     }
 }

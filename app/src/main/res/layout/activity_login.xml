@@ -39,12 +39,14 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/white"
         android:layout_marginBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/white"
             android:padding="24dp">
 
             <!-- Campo Matrícula -->
@@ -102,7 +104,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Matrícula: 20241234567\nSenha: 123456"
+        android:text="Matrícula: 2810000317\nSenha: 123456"
         android:textSize="12sp"
         android:textColor="@color/gray_500"
         android:textAlignment="center"

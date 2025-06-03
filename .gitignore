@@ -47,5 +47,40 @@ proguard/
 *.swp
 *.swo
 
+# Test reports and coverage
+/app/build/reports/
+/app/build/test-results/
+/app/build/outputs/androidTest-results/
+coverage/
+*.lcov
+
+# Documentation generated files
+/docs/generated/
+/docs/*.pdf
+/docs/*.docx
+
+# Backup files
+*.bak
+*.backup
+*~
+
 # OS generated files
 Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# IDE specific files
+*.iws
+*.ipr
+out/
+gen/
+
+# Additional system files
+.fuse_hidden*
+.directory
+.Trash-*
+nohup.out

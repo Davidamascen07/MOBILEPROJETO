@@ -47,12 +47,27 @@ public class NotasFragment extends Fragment {
     private void initData() {
         repository = new Repository(getContext());
         prefsManager = new PreferencesManager(getContext());
+        
+        // Forçar população dos dados
+        repository.populateInitialData();
     }
 
     private void loadNotas() {
         String periodoAtual = prefsManager.getPeriodoSelecionado();
         List<Nota> notas = repository.getNotasByPeriodo(periodoAtual);
         List<Disciplina> disciplinas = repository.getAllDisciplinas();
+        
+        // Debug
+        android.util.Log.d("NotasFragment", "Período: " + periodoAtual);
+        android.util.Log.d("NotasFragment", "Notas encontradas: " + notas.size());
+        android.util.Log.d("NotasFragment", "Disciplinas encontradas: " + disciplinas.size());
+        
+        // Se não há dados, tentar forçar reset
+        if (notas.isEmpty()) {
+            android.util.Log.d("NotasFragment", "Forçando reset dos dados...");
+            repository.forceResetData();
+            notas = repository.getNotasByPeriodo(periodoAtual);
+        }
         
         // Combinar notas com disciplinas
         List<NotaComDisciplina> notasComDisciplinas = new ArrayList<>();
@@ -63,6 +78,7 @@ public class NotasFragment extends Fragment {
             }
         }
         
+        // Usar construtor correto: List<NotaComDisciplina>, Context
         notasAdapter = new NotasAdapter(notasComDisciplinas, getContext());
         recyclerViewNotas.setAdapter(notasAdapter);
     }

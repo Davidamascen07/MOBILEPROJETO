@@ -98,13 +98,37 @@ public class DetalhesNotaActivity extends AppCompatActivity {
             }
         }
 
-        // Carregar faltas
-        List<Falta> faltas = repository.getFaltasByPeriodo(periodoAtual);
+        // Carregar faltas - usar método padrão se o novo método não existir
+        List<Falta> faltas;
+        try {
+            faltas = repository.getFaltasComCalculoCorreto(periodoAtual);
+        } catch (Exception e) {
+            // Fallback para método padrão se o novo método não existir
+            faltas = repository.getFaltasByPeriodo(periodoAtual);
+            // Aplicar cálculos manualmente
+            for (Falta falta : faltas) {
+                falta.calcularTotalFaltas();
+                falta.calcularPercentual(75.0);
+            }
+        }
+        
         for (Falta falta : faltas) {
             if (falta.getDisciplinaId() == disciplinaId) {
                 tvTotalFaltas.setText(String.valueOf(falta.getTotalFaltas()));
                 tvPercentualFaltas.setText(String.format("%.1f%%", falta.getPercentual()));
                 configurarCorFaltas(tvPercentualFaltas, falta.getStatusFaltas());
+                
+                // Adicionar indicador se pode reprovar por falta
+                try {
+                    if (falta.podeReprovarPorFalta()) {
+                        tvPercentualFaltas.append(" ⚠️");
+                    }
+                } catch (Exception e) {
+                    // Método pode não existir ainda, usar cálculo manual
+                    if (falta.getPercentual() >= 25.0) {
+                        tvPercentualFaltas.append(" ⚠️");
+                    }
+                }
                 break;
             }
         }
