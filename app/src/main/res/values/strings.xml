@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MobilIA P3</string>
+    
+    <!-- Telas principais -->
+    <string name="login_title">Login Acadêmico</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="notas_title">Notas</string>
+    <string name="faltas_title">Faltas</string>
+    <string name="historico_title">Histórico</string>
+    <string name="horarios_title">Horários</string>
+    
+    <!-- Login -->
+    <string name="hint_matricula">Matrícula</string>
+    <string name="hint_senha">Senha</string>
+    <string name="btn_entrar">Entrar</string>
+    <string name="erro_login">Credenciais inválidas</string>
+    
+    <!-- Navigation -->
+    <string name="nav_dashboard">Início</string>
+    <string name="nav_notas">Notas</string>
+    <string name="nav_faltas">Faltas</string>
+    <string name="nav_historico">Histórico</string>
+    <string name="nav_perfil">Perfil</string>
+    
+    <!-- Menu -->
+    <string name="action_logout">Sair</string>
+    <string name="action_share">Compartilhar</string>
+    <string name="action_settings">Configurações</string>
+    
+    <!-- Status -->
+    <string name="status_aprovado">Aprovado</string>
+    <string name="status_reprovado">Reprovado</string>
+    <string name="status_cursando">Cursando</string>
+    <string name="status_pendente">Pendente</string>
+    
+    <!-- Faltas -->
+    <string name="faltas_dentro_limite">Dentro do limite</string>
+    <string name="faltas_proximo_limite">Próximo ao limite</string>
+    <string name="faltas_acima_limite">Acima do limite</string>
+    
+    <!-- Compartilhamento -->
+    <string name="compartilhar_boletim">Compartilhar Boletim</string>
+    <string name="texto_compartilhamento">Confira meu boletim acadêmico:</string>
+    
+    <!-- Dashboard -->
+    <string name="bem_vindo">Bem-vindo</string>
+    <string name="resumo_academico">Resumo Acadêmico</string>
+    <string name="disciplinas_cursando">Disciplinas Cursando</string>
+    <string name="periodo_atual">Período Atual: %s</string>
+    
+    <!-- Mensagens -->
+    <string name="carregando">Carregando...</string>
+    <string name="erro_carregar_dados">Erro ao carregar dados</string>
+    <string name="sem_dados">Nenhum dado encontrado</string>
+</resources>
