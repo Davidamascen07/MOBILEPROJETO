@@ -1,0 +1,33 @@
+<resources>
+    
+    <!-- Card styles modernos com sombras suaves -->
+    <style name="AppCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardMaxElevation">4dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+    
+    <style name="AppCardView.Header" parent="AppCardView">
+        <item name="cardElevation">4dp</item>
+        <item name="cardMaxElevation">6dp</item>
+        <item name="cardCornerRadius">16dp</item>
+    </style>
+    
+    <style name="AppCardView.Small" parent="AppCardView">
+        <item name="cardElevation">1dp</item>
+        <item name="cardMaxElevation">2dp</item>
+        <item name="cardCornerRadius">8dp</item>
+    </style>
+    
+    <!-- Button styles -->
+    <style name="AppButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_height">56dp</item>
+    </style>
+    
+</resources>

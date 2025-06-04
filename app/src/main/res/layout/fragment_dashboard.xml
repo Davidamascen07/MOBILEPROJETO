@@ -17,7 +17,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardElevation="4dp"
+            app:cardMaxElevation="6dp"
+            app:cardUseCompatPadding="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,44 +55,47 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
 
             <!-- Card Total Disciplinas -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="1"
+                android:layout_height="130dp"
                 android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white">
+                app:cardElevation="2dp"
+                app:cardMaxElevation="4dp"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
                     android:background="@color/white"
                     android:gravity="center"
-                    android:padding="16dp">
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
                     <TextView
                         android:id="@+id/tv_total_disciplinas"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5"
-                        android:textSize="36sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_blue" />
+                        android:textColor="@color/primary_blue"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:text="Total de\nDisciplinas"
-                        android:textSize="12sp"
                         android:textAlignment="center"
                         android:textColor="@color/gray_600"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="11sp"
+                        android:lineSpacingMultiplier="0.9" />
 
                 </LinearLayout>
 
@@ -99,38 +104,40 @@
             <!-- Card Cursando -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="1"
+                android:layout_height="130dp"
                 android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white">
+                app:cardElevation="2dp"
+                app:cardMaxElevation="4dp"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
                     android:background="@color/white"
                     android:gravity="center"
-                    android:padding="16dp">
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
                     <TextView
                         android:id="@+id/tv_disciplinas_cursando"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="4"
-                        android:textSize="36sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/accent_green" />
+                        android:textColor="@color/accent_green"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:text="Cursando"
-                        android:textSize="12sp"
                         android:textAlignment="center"
                         android:textColor="@color/gray_600"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="11sp" />
 
                 </LinearLayout>
 
@@ -144,7 +151,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
+            app:cardElevation="3dp"
+            app:cardMaxElevation="5dp"
+            app:cardUseCompatPadding="true"
             app:cardBackgroundColor="@color/white">
 
             <LinearLayout
@@ -182,7 +191,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
+            app:cardElevation="3dp"
+            app:cardMaxElevation="5dp"
+            app:cardUseCompatPadding="true"
             app:cardBackgroundColor="@color/white">
 
             <LinearLayout
