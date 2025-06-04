@@ -61,9 +61,15 @@ public class DashboardFragment extends Fragment {
         String nomeUsuario = prefsManager.getUserNome();
         String periodoAtual = prefsManager.getPeriodoSelecionado();
 
-        // Configurar dados básicos
-        tvBemVindo.setText(getString(R.string.bem_vindo) + ", " + nomeUsuario.split(" ")[0]);
-        tvPeriodoAtual.setText(getString(R.string.periodo_atual, periodoAtual));
+        // Configurar dados básicos - verificar se o usuário não está vazio
+        if (nomeUsuario != null && !nomeUsuario.isEmpty()) {
+            String primeiroNome = nomeUsuario.split(" ")[0];
+            tvBemVindo.setText("Bem-vindo, " + primeiroNome);
+        } else {
+            tvBemVindo.setText("Bem-vindo");
+        }
+        
+        tvPeriodoAtual.setText("Período Atual: " + periodoAtual);
 
         // Carregar disciplinas
         List<Disciplina> disciplinas = repository.getAllDisciplinas();
@@ -71,7 +77,14 @@ public class DashboardFragment extends Fragment {
 
         // Carregar notas do período atual
         List<Nota> notas = repository.getNotasByPeriodo(periodoAtual);
-        long cursando = notas.stream().filter(nota -> "CURSANDO".equals(nota.getSituacao())).count();
+        long cursando = 0;
+        
+        // Contar disciplinas cursando (compatível com versões mais antigas do Android)
+        for (Nota nota : notas) {
+            if ("CURSANDO".equals(nota.getSituacao())) {
+                cursando++;
+            }
+        }
         tvDisciplinasCursando.setText(String.valueOf(cursando));
 
         // Calcular média geral (simplificado)

@@ -85,13 +85,60 @@ O app utiliza SQLite com as seguintes tabelas:
 - ✅ Perfil do usuário
 - ✅ Interface responsiva
 - ✅ Tema claro/escuro
+- ✅ **Testes automatizados completos**
 
-## 📝 Próximos Passos
+## 🧪 Testes Automatizados
 
-- [ ] Sincronização com servidor
-- [ ] Notificações push
-- [ ] Exportação de dados
-- [ ] Modo offline completo
+O projeto inclui uma suíte completa de testes automatizados:
+
+### Testes Unitários (JUnit + Mockito)
+- **NotaTest**: Validação dos cálculos de notas e situações
+- **FaltaTest**: Teste dos cálculos de faltas e percentuais
+- **ModelTest**: Validação das regras de negócio dos modelos
+
+### Testes de Instrumentação (Espresso)
+- **LoginActivityTest**: Fluxo completo de autenticação
+- **MainActivityTest**: Navegação e funcionalidades principais
+- **DashboardFragmentTest**: Exibição de dados no dashboard
+- **DatabaseTest**: Validação das operações de banco de dados
+
+### Cobertura de Testes
+- ✅ **Autenticação**: Login válido/inválido, validações
+- ✅ **Navegação**: Bottom Navigation, transições entre fragments
+- ✅ **Dados**: CRUD do SQLite, Repository Pattern
+- ✅ **Cálculos**: Notas, faltas, percentuais, situações
+- ✅ **Interface**: Elementos visíveis, responsividade
+
+### Como Executar os Testes
+
+1. **Testes Unitários**:
+   ```bash
+   ./gradlew test
+   ```
+
+2. **Testes de Instrumentação**:
+   ```bash
+   ./gradlew connectedAndroidTest
+   ```
+
+3. **Todos os Testes**:
+   ```bash
+   ./gradlew check connectedAndroidTest
+   ```
+
+4. **Relatório de Cobertura**:
+   ```bash
+   ./gradlew jacocoTestReport
+   ```
+
+## 📊 Requisitos Atendidos
+
+| Requisito | Status | Implementação |
+|-----------|--------|---------------|
+| **Intents** | ✅ | Navegação entre activities e compartilhamento |
+| **SQLite** | ✅ | DatabaseHelper + Repository Pattern |
+| **SharedPreferences** | ✅ | PreferencesManager completo |
+| **Testes Automatizados** | ✅ | **JUnit + Mockito + Espresso (COMPLETO)** |
 
 ## 👨‍💻 Desenvolvedor
 
