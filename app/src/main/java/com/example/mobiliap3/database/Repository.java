@@ -9,6 +9,7 @@ import com.example.mobiliap3.models.Disciplina;
 import com.example.mobiliap3.models.Nota;
 import com.example.mobiliap3.models.Falta;
 import com.example.mobiliap3.models.Usuario;
+import com.example.mobiliap3.models.Historico;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -342,5 +343,69 @@ public class Repository {
         }
         
         return faltas;
+    }
+
+    // Método para obter histórico completo com JOIN
+    public List<Historico> getHistoricoCompleto() {
+        List<Historico> historico = new ArrayList<>();
+        openDatabase();
+
+        String query = "SELECT " +
+                "d." + DatabaseHelper.COL_DISC_NOME + " as disciplina_nome, " +
+                "d." + DatabaseHelper.COL_DISC_CODIGO + " as disciplina_codigo, " +
+                "n." + DatabaseHelper.COL_NOTA_PERIODO + " as periodo, " +
+                "n." + DatabaseHelper.COL_NOTA_SITUACAO + " as situacao, " +
+                "n." + DatabaseHelper.COL_NOTA_FINAL + " as nota_final, " +
+                "f." + DatabaseHelper.COL_FALTA_TOTAL + " as total_faltas " +
+                "FROM " + DatabaseHelper.TABLE_NOTAS + " n " +
+                "INNER JOIN " + DatabaseHelper.TABLE_DISCIPLINAS + " d ON n." + DatabaseHelper.COL_NOTA_DISCIPLINA_ID + " = d." + DatabaseHelper.COL_DISC_ID + " " +
+                "LEFT JOIN " + DatabaseHelper.TABLE_FALTAS + " f ON n." + DatabaseHelper.COL_NOTA_DISCIPLINA_ID + " = f." + DatabaseHelper.COL_FALTA_DISCIPLINA_ID + " AND n." + DatabaseHelper.COL_NOTA_PERIODO + " = f." + DatabaseHelper.COL_FALTA_PERIODO + " " +
+                "ORDER BY n." + DatabaseHelper.COL_NOTA_PERIODO + " DESC, d." + DatabaseHelper.COL_DISC_NOME;
+
+        Cursor cursor = database.rawQuery(query, null);
+        
+        if (cursor.moveToFirst()) {
+            do {
+                String disciplinaNome = cursor.getString(cursor.getColumnIndexOrThrow("disciplina_nome"));
+                String periodo = cursor.getString(cursor.getColumnIndexOrThrow("periodo"));
+                String situacao = cursor.getString(cursor.getColumnIndexOrThrow("situacao"));
+                
+                double notaFinal = 0.0;
+                if (!cursor.isNull(cursor.getColumnIndexOrThrow("nota_final"))) {
+                    notaFinal = cursor.getDouble(cursor.getColumnIndexOrThrow("nota_final"));
+                }
+                
+                int totalFaltas = 0;
+                if (!cursor.isNull(cursor.getColumnIndexOrThrow("total_faltas"))) {
+                    totalFaltas = cursor.getInt(cursor.getColumnIndexOrThrow("total_faltas"));
+                }
+                
+                // Mapear período para formato de exibição
+                String periodoFormatado = formatarPeriodo(periodo);
+                
+                Historico item = new Historico(periodoFormatado, disciplinaNome, periodo, situacao, notaFinal, totalFaltas);
+                historico.add(item);
+                
+            } while (cursor.moveToNext());
+        }
+        
+        cursor.close();
+        closeDatabase();
+        return historico;
+    }
+
+    private String formatarPeriodo(String periodo) {
+        // Converter "2021.2" para "1º PERÍODO", "2022.1" para "2º PERÍODO", etc.
+        switch (periodo) {
+            case "2021.2": return "1º PERÍODO";
+            case "2022.1": return "2º PERÍODO";
+            case "2022.2": return "3º PERÍODO";
+            case "2023.1": return "4º PERÍODO";
+            case "2023.2": return "5º PERÍODO";
+            case "2024.1": return "6º PERÍODO";
+            case "2024.2": return "7º PERÍODO";
+            case "2025.1": return "8º PERÍODO";
+            default: return periodo;
+        }
     }
 }

@@ -30,9 +30,15 @@ public class HistoricoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public int getItemViewType(int position) {
         Historico item = historico.get(position);
         // Se é o primeiro item ou o período é diferente do anterior, é um header
-        if (position == 0 || !item.getPeriodo().equals(historico.get(position - 1).getPeriodo())) {
+        if (position == 0) {
             return TYPE_PERIODO;
         }
+        
+        Historico itemAnterior = historico.get(position - 1);
+        if (!item.getPeriodo().equals(itemAnterior.getPeriodo())) {
+            return TYPE_PERIODO;
+        }
+        
         return TYPE_DISCIPLINA;
     }
 
