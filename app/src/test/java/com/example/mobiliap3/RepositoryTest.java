@@ -70,16 +70,32 @@ public class RepositoryTest {
 
     @Test
     public void testGetFaltasByPeriodo() {
-        List<Falta> faltas = repository.getFaltasByPeriodo("2025.1");
+        // CORRIGIR: Usar usuarioId válido
+        List<Falta> faltas = repository.getFaltasByPeriodo("2025.1", 1);
         
         assertNotNull("Lista de faltas não deve ser nula", faltas);
         assertTrue("Deve haver faltas para 2025.1", faltas.size() > 0);
         
-        // Verificar cálculos de faltas
+        // Verificar cálculos de faltas com limites corretos
         for (Falta falta : faltas) {
             assertEquals("Período deve ser 2025.1", "2025.1", falta.getPeriodo());
             assertTrue("Total de faltas deve ser >= 0", falta.getTotalFaltas() >= 0);
             assertTrue("Percentual deve ser >= 0", falta.getPercentual() >= 0);
+            
+            // ADICIONAR: Testar status correto
+            String status = falta.getStatusFaltas();
+            assertTrue("Status deve ser válido", 
+                status.equals("DENTRO_LIMITE") || 
+                status.equals("PROXIMO_LIMITE") || 
+                status.equals("ACIMA_LIMITE"));
+                
+            // ADICIONAR: Testar limite de reprovação
+            if (falta.getPercentual() >= 25.0) {
+                assertTrue("Deve reprovar com 25% ou mais", falta.podeReprovarPorFalta());
+                assertEquals("Status deve ser ACIMA_LIMITE", "ACIMA_LIMITE", falta.getStatusFaltas());
+            } else {
+                assertFalse("Não deve reprovar com menos de 25%", falta.podeReprovarPorFalta());
+            }
         }
     }
 

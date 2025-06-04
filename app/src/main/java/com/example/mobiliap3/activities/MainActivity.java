@@ -24,6 +24,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // TEMPORÁRIO: Reset dados para debug (remover em produção)
+        // Repository repository = new Repository(this);
+        // repository.forceRecreateDatabase();
+        
         setContentView(R.layout.activity_main);
 
         initViews();

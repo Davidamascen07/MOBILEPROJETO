@@ -3,6 +3,7 @@ package com.example.mobiliap3.models;
 public class Falta {
     private int id;
     private int disciplinaId;
+    private int usuarioId; // ADICIONAR campo usuarioId
     private String periodo;
     private int janeiro;
     private int fevereiro;
@@ -26,6 +27,14 @@ public class Falta {
 
     public int getDisciplinaId() { return disciplinaId; }
     public void setDisciplinaId(int disciplinaId) { this.disciplinaId = disciplinaId; }
+
+    public int getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
 
     public String getPeriodo() { return periodo; }
     public void setPeriodo(String periodo) { this.periodo = periodo; }
@@ -54,32 +63,29 @@ public class Falta {
     public double getPercentual() { return percentual; }
     public void setPercentual(double percentual) { this.percentual = percentual; }
 
-    // Método para calcular total de faltas
+    // Métodos auxiliares
     public void calcularTotalFaltas() {
         this.totalFaltas = janeiro + fevereiro + marco + abril + maio + junho;
     }
 
-    // Método para calcular percentual
     public void calcularPercentual(double cargaHoraria) {
         if (cargaHoraria > 0) {
             this.percentual = ((double) totalFaltas / cargaHoraria) * 100;
         } else {
-            this.percentual = 0.0;
+            this.percentual = 0;
         }
     }
 
-    // Método para obter status das faltas
     public String getStatusFaltas() {
-        if (percentual < 20.0) {
-            return "DENTRO_LIMITE";
-        } else if (percentual < 25.0) {
+        if (percentual >= 25.0) {
+            return "ACIMA_LIMITE";
+        } else if (percentual >= 20.0) {
             return "PROXIMO_LIMITE";
         } else {
-            return "ACIMA_LIMITE";
+            return "DENTRO_LIMITE";
         }
     }
 
-    // Método para verificar se pode reprovar por falta
     public boolean podeReprovarPorFalta() {
         return percentual >= 25.0;
     }
@@ -96,5 +102,23 @@ public class Falta {
             default:
                 return "Status indefinido";
         }
+    }
+
+    // ADICIONAR: Método para recalcular com carga horária específica
+    public void recalcularComCargaHoraria(double cargaHoraria) {
+        calcularTotalFaltas();
+        calcularPercentual(cargaHoraria);
+    }
+
+    // ADICIONAR: Método para validar se cálculo está correto
+    public boolean isCalculoCorreto(double cargaHorariaEsperada) {
+        double percentualEsperado = ((double) totalFaltas / cargaHorariaEsperada) * 100;
+        return Math.abs(percentual - percentualEsperado) < 0.01; // Tolerância de 0.01%
+    }
+
+    // ADICIONAR: Método para debug
+    public String getDebugInfo(double cargaHoraria) {
+        return String.format("Faltas: %d, CH: %.0fh, Percentual: %.2f%% (%s)", 
+                           totalFaltas, cargaHoraria, percentual, getStatusFaltas());
     }
 }

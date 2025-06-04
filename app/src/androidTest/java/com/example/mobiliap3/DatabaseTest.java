@@ -67,16 +67,46 @@ public class DatabaseTest {
 
     @Test
     public void testGetFaltasByPeriodo() {
-        List<Falta> faltas = repository.getFaltasByPeriodo("2025.1");
+        // CORRIGIR: Usar usuarioId válido
+        List<Falta> faltas = repository.getFaltasByPeriodo("2025.1", 1);
         
         assertNotNull("Lista de faltas não deve ser nula", faltas);
         assertTrue("Deve haver faltas para 2025.1", faltas.size() > 0);
         
-        // Verificar cálculos de faltas
+        // Verificar cálculos de faltas com REGRAS CORRETAS
         for (Falta falta : faltas) {
             assertEquals("Período deve ser 2025.1", "2025.1", falta.getPeriodo());
             assertTrue("Total de faltas deve ser >= 0", falta.getTotalFaltas() >= 0);
             assertTrue("Percentual deve ser >= 0", falta.getPercentual() >= 0);
+            
+            // ADICIONAR: Verificar regra dos 25%
+            if (falta.getPercentual() >= 25.0) {
+                assertEquals("25% ou mais deve ser ACIMA_LIMITE", "ACIMA_LIMITE", falta.getStatusFaltas());
+                assertTrue("25% ou mais deve reprovar", falta.podeReprovarPorFalta());
+            } else if (falta.getPercentual() >= 20.0) {
+                assertEquals("20-24% deve ser PROXIMO_LIMITE", "PROXIMO_LIMITE", falta.getStatusFaltas());
+                assertFalse("20-24% não deve reprovar", falta.podeReprovarPorFalta());
+            } else {
+                assertEquals("Menos de 20% deve ser DENTRO_LIMITE", "DENTRO_LIMITE", falta.getStatusFaltas());
+                assertFalse("Menos de 20% não deve reprovar", falta.podeReprovarPorFalta());
+            }
+        }
+    }
+
+    // ADICIONAR: Teste específico para validar dados de 24%
+    @Test
+    public void testFalta24PorcentoStatus() {
+        List<Falta> faltas = repository.getFaltasByPeriodo("2025.1", 1);
+        
+        // Procurar falta com aproximadamente 24%
+        for (Falta falta : faltas) {
+            if (Math.abs(falta.getPercentual() - 24.0) < 1.0) { // Aproximadamente 24%
+                assertEquals("24% deve ser PROXIMO_LIMITE", "PROXIMO_LIMITE", falta.getStatusFaltas());
+                assertFalse("24% não deve reprovar", falta.podeReprovarPorFalta());
+                assertEquals("Descrição deve indicar próximo ao limite", 
+                    "Próximo ao limite (25%)", falta.getDescricaoStatus());
+                break;
+            }
         }
     }
 

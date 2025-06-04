@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MobilIA P3</string>
+    <string name="app_name">Sistema Acadêmico Mobile</string>
     
     <!-- Telas principais -->
     <string name="login_title">Login Acadêmico</string>

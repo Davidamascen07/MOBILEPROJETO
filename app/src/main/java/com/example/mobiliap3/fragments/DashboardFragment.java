@@ -76,7 +76,7 @@ public class DashboardFragment extends Fragment {
         tvTotalDisciplinas.setText(String.valueOf(disciplinas.size()));
 
         // Carregar notas do período atual
-        List<Nota> notas = repository.getNotasByPeriodo(periodoAtual);
+        List<Nota> notas = repository.getNotasByPeriodo(periodoAtual, prefsManager.getUserId());
         long cursando = 0;
         
         // Contar disciplinas cursando (compatível com versões mais antigas do Android)

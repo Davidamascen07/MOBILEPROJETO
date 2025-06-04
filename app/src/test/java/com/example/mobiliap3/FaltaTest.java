@@ -1,6 +1,7 @@
 package com.example.mobiliap3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.example.mobiliap3.models.Falta;
@@ -21,7 +22,7 @@ public class FaltaTest {
         
         falta.calcularTotalFaltas();
         
-        assertEquals("Total de faltas deve ser 12", 12, falta.getTotalFaltas());
+        assertEquals("Total correto", 12, falta.getTotalFaltas());
     }
 
     @Test
@@ -29,24 +30,21 @@ public class FaltaTest {
         Falta falta = new Falta();
         falta.setTotalFaltas(15);
         
-        falta.calcularPercentual(75.0); // 75 horas totais
+        falta.calcularPercentual(75.0);
         
-        assertEquals("Percentual deve ser 20%", 20.0, falta.getPercentual(), 0.1);
+        assertEquals("Percentual correto", 20.0, falta.getPercentual(), 0.1);
     }
 
     @Test
     public void testStatusFaltas() {
         Falta falta = new Falta();
         
-        // Teste dentro do limite (< 20%)
         falta.setPercentual(15.0);
         assertEquals("DENTRO_LIMITE", falta.getStatusFaltas());
         
-        // Teste próximo ao limite (20-24%)
         falta.setPercentual(22.0);
         assertEquals("PROXIMO_LIMITE", falta.getStatusFaltas());
         
-        // Teste acima do limite (>= 25%)
         falta.setPercentual(26.0);
         assertEquals("ACIMA_LIMITE", falta.getStatusFaltas());
     }
@@ -55,12 +53,24 @@ public class FaltaTest {
     public void testReprovarPorFalta() {
         Falta falta = new Falta();
         
-        // Teste reprovação por falta
         falta.setPercentual(25.0);
-        assertTrue("Deve reprovar com 25% de faltas", falta.podeReprovarPorFalta());
+        assertTrue("Deve reprovar com 25%", falta.podeReprovarPorFalta());
         
-        // Teste aprovação
         falta.setPercentual(20.0);
-        assertTrue("Não deve reprovar com 20% de faltas", !falta.podeReprovarPorFalta());
+        assertFalse("Não deve reprovar com 20%", falta.podeReprovarPorFalta());
+    }
+
+    @Test
+    public void testDescricaoStatus() {
+        Falta falta = new Falta();
+        
+        falta.setPercentual(10.0);
+        assertEquals("Dentro do limite permitido", falta.getDescricaoStatus());
+        
+        falta.setPercentual(23.0);
+        assertEquals("Próximo ao limite (25%)", falta.getDescricaoStatus());
+        
+        falta.setPercentual(30.0);
+        assertEquals("Acima do limite - Reprovação por falta", falta.getDescricaoStatus());
     }
 }

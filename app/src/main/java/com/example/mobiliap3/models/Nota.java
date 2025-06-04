@@ -3,6 +3,7 @@ package com.example.mobiliap3.models;
 public class Nota {
     private int id;
     private int disciplinaId;
+    private int usuarioId; // ADICIONAR campo usuarioId
     private String periodo;
     private Double nt1;
     private Double nt2;
@@ -20,12 +21,28 @@ public class Nota {
         this.situacao = situacao;
     }
 
+    // ADICIONAR construtor com usuarioId
+    public Nota(int disciplinaId, int usuarioId, String periodo, String situacao) {
+        this.disciplinaId = disciplinaId;
+        this.usuarioId = usuarioId;
+        this.periodo = periodo;
+        this.situacao = situacao;
+    }
+
     // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
     public int getDisciplinaId() { return disciplinaId; }
     public void setDisciplinaId(int disciplinaId) { this.disciplinaId = disciplinaId; }
+
+    public int getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
 
     public String getPeriodo() { return periodo; }
     public void setPeriodo(String periodo) { this.periodo = periodo; }
@@ -81,7 +98,7 @@ public class Nota {
             this.situacao = "CURSANDO";
         } else if (notaFinal >= 7.0) {
             this.situacao = "APROVADO";
-        } else if (notaFinal >= 5.0) {
+        } else if (notaFinal >= 4.0) {
             this.situacao = "APROVADO";
         } else {
             this.situacao = "REPROVADO";

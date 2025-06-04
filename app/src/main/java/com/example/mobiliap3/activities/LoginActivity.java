@@ -34,6 +34,15 @@ public class LoginActivity extends AppCompatActivity {
         etMatricula = findViewById(R.id.et_matricula);
         etSenha = findViewById(R.id.et_senha);
         btnEntrar = findViewById(R.id.btn_entrar);
+        
+        // Adicionar botão de cadastro com verificação de nulidade
+        Button btnCadastro = findViewById(R.id.btn_cadastrar_novo);
+        if (btnCadastro != null) {
+            btnCadastro.setOnClickListener(v -> {
+                Intent intent = new Intent(this, CadastroActivity.class);
+                startActivity(intent);
+            });
+        }
     }
 
     private void initDatabase() {
@@ -60,17 +69,23 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // Autenticar usuário
         Usuario usuario = dbHelper.autenticarUsuario(matricula, senha);
         
         if (usuario != null) {
-            // Salvar dados do usuário
+            // Salvar dados do usuário nas preferências
             prefsManager.setLoggedIn(true);
             prefsManager.setUserData(usuario.getId(), usuario.getNome(), usuario.getMatricula());
             
-            Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show();
-            navigateToMain();
+            // Criar dados iniciais para o usuário se necessário
+            dbHelper.criarDadosInicaisUsuario(usuario.getId());
+            
+            // Ir para MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
         } else {
-            Toast.makeText(this, getString(R.string.erro_login), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Matrícula ou senha incorreta", Toast.LENGTH_SHORT).show();
         }
     }
 

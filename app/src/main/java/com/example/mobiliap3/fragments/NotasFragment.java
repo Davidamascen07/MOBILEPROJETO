@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NotasFragment extends Fragment {
-    private RecyclerView recyclerViewNotas;
-    private NotasAdapter notasAdapter;
+    
+    private static final boolean MOSTRAR_PERIODO_ANTERIOR = true;
+    private RecyclerView recyclerView;
+    private NotasAdapter adapter;
     private Repository repository;
     private PreferencesManager prefsManager;
+    private List<Disciplina> disciplinas;
 
     @Nullable
     @Override
@@ -40,8 +43,8 @@ public class NotasFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        recyclerViewNotas = view.findViewById(R.id.recycler_view_notas);
-        recyclerViewNotas.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView = view.findViewById(R.id.recycler_view_notas);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void initData() {
@@ -54,19 +57,16 @@ public class NotasFragment extends Fragment {
 
     private void loadNotas() {
         String periodoAtual = prefsManager.getPeriodoSelecionado();
-        List<Nota> notas = repository.getNotasByPeriodo(periodoAtual);
-        List<Disciplina> disciplinas = repository.getAllDisciplinas();
+        int usuarioId = prefsManager.getUserId();
         
-        // Debug
-        android.util.Log.d("NotasFragment", "Período: " + periodoAtual);
-        android.util.Log.d("NotasFragment", "Notas encontradas: " + notas.size());
+        // Carregar disciplinas primeiro
+        disciplinas = repository.getAllDisciplinas();
         android.util.Log.d("NotasFragment", "Disciplinas encontradas: " + disciplinas.size());
         
-        // Se não há dados, tentar forçar reset
-        if (notas.isEmpty()) {
-            android.util.Log.d("NotasFragment", "Forçando reset dos dados...");
-            repository.forceResetData();
-            notas = repository.getNotasByPeriodo(periodoAtual);
+        List<Nota> notas = repository.getNotasByPeriodo(periodoAtual, usuarioId);
+        
+        if (MOSTRAR_PERIODO_ANTERIOR && notas.isEmpty()) {
+            notas = repository.getNotasByPeriodo(periodoAtual, usuarioId);
         }
         
         // Combinar notas com disciplinas
@@ -79,8 +79,8 @@ public class NotasFragment extends Fragment {
         }
         
         // Usar construtor correto: List<NotaComDisciplina>, Context
-        notasAdapter = new NotasAdapter(notasComDisciplinas, getContext());
-        recyclerViewNotas.setAdapter(notasAdapter);
+        adapter = new NotasAdapter(notasComDisciplinas, getContext());
+        recyclerView.setAdapter(adapter);
     }
 
     private Disciplina findDisciplinaById(List<Disciplina> disciplinas, int id) {

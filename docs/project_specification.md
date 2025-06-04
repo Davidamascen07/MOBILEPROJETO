@@ -23,9 +23,13 @@ Desenvolver um aplicativo móvel Android para consulta de notas, faltas, horári
 ### RF03 - Consulta de Faltas ⚠️ **ATUALIZADO**
 - Visualização de faltas por período
 - Controle de faltas por mês
-- Indicadores visuais (dentro do limite <20%, próximo ao limite 20-24%, acima do limite ≥25%)
+- Indicadores visuais com faixas de status:
+  - **DENTRO DO LIMITE**: < 20% de faltas (verde)
+  - **PRÓXIMO AO LIMITE**: 20% a 24.9% de faltas (laranja)  
+  - **ACIMA DO LIMITE**: ≥ 25% de faltas (vermelho)
 - Cálculo automático de percentual de faltas baseado na carga horária
-- **Nova regra**: ≥25% de faltas = reprovação automática
+- **Regra de reprovação**: ≥25% de faltas = reprovação automática por falta
+- **Exemplo**: 24% = "Próximo ao limite", 25% = "Acima do limite - Reprovação"
 
 ### RF04 - Histórico Acadêmico
 - Consulta de disciplinas cursadas
@@ -59,6 +63,22 @@ Desenvolver um aplicativo móvel Android para consulta de notas, faltas, horári
 - **Reprovado por nota**: Nota final < 5,0
 - **Reprovado por falta**: Faltas ≥ 25%
 - **Cursando**: Disciplina em andamento
+
+## Regras de Negócio - Faltas
+
+### RN01 - Cálculo de Percentual de Faltas
+```
+Percentual = (Total de Faltas / Carga Horária da Disciplina) × 100
+```
+
+### RN02 - Status das Faltas
+- **0% a 19.9%**: DENTRO_LIMITE (🟢)
+- **20% a 24.9%**: PROXIMO_LIMITE (🟡) 
+- **25% ou mais**: ACIMA_LIMITE (🔴) → **REPROVAÇÃO POR FALTA**
+
+### RN03 - Alertas Visuais
+- Disciplinas com 20-24%: Mostrar ícone de aviso ⚠️
+- Disciplinas com ≥25%: Mostrar ícone de erro ❌ e mensagem "REPROVADO POR FALTA"
 
 ## Status de Implementação - **ATUALIZADO** 
 

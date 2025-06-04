@@ -105,7 +105,9 @@ public class HistoricoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         public void bind(Historico historico) {
             tvDisciplinaNome.setText(historico.getDisciplinaNome());
-            tvPeriodoLetivo.setText(historico.getPeriodoLetivo());
+            
+            // CORRIGIR: usar getPeriodo() ao invés de getPeriodoLetivo()
+            tvPeriodoLetivo.setText(historico.getPeriodo());
             tvSituacao.setText(historico.getSituacao());
             
             if ("CURSANDO".equals(historico.getSituacao())) {

@@ -36,7 +36,7 @@
                     android:id="@+id/tv_disciplina_nome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TÓPICOS EM DESENVOLVIMENTO MOBILE"
+                    android:text=""
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/gray_800"
@@ -47,7 +47,7 @@
                     android:id="@+id/tv_disciplina_codigo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SINF061"
+                    android:text=""
                     android:textSize="13sp"
                     android:textColor="@color/gray_600"
                     android:layout_marginTop="4dp" />

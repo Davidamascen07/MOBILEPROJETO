@@ -15,9 +15,13 @@ import com.example.mobiliap3.models.Nota;
 import com.example.mobiliap3.models.Falta;
 import com.example.mobiliap3.utils.PreferencesManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetalhesNotaActivity extends AppCompatActivity {
+    
+    private static final boolean MOSTRAR_PERIODO_ANTERIOR = true;
+    
     private TextView tvDisciplinaNome;
     private TextView tvDisciplinaCodigo;
     private TextView tvCreditos;
@@ -78,39 +82,43 @@ public class DetalhesNotaActivity extends AppCompatActivity {
     }
 
     private void loadDetalhes() {
-        // Carregar dados da disciplina
+        String periodoAtual = prefsManager.getPeriodoSelecionado();
+        int usuarioId = prefsManager.getUserId();
+        
+        // Validar se usuário está logado
+        if (usuarioId == -1) {
+            android.util.Log.e("DetalhesNotaActivity", "Usuário não encontrado");
+            return;
+        }
+        
+        // PRIORIZAR dados do banco sobre Intent extras
         Disciplina disciplina = repository.getDisciplinaById(disciplinaId);
         if (disciplina != null) {
+            // SOBRESCREVER com dados corretos do banco
+            tvDisciplinaNome.setText(disciplina.getNome());
+            tvDisciplinaCodigo.setText(disciplina.getCodigo());
             tvCreditos.setText(String.valueOf(disciplina.getCreditos()));
             tvCargaHoraria.setText(String.format("%.0fh", disciplina.getCargaHoraria()));
         }
 
-        // Carregar notas
-        String periodoAtual = prefsManager.getPeriodoSelecionado();
-        List<Nota> notas = repository.getNotasByPeriodo(periodoAtual);
+        // Carregar notas FILTRADAS por disciplinaId específico
+        List<Nota> notas = repository.getNotasByPeriodo(periodoAtual, usuarioId);
         
         for (Nota nota : notas) {
             if (nota.getDisciplinaId() == disciplinaId) {
                 tvNt1.setText(nota.getNt1() != null ? String.format("%.1f", nota.getNt1()) : "--");
                 tvNt2.setText(nota.getNt2() != null ? String.format("%.1f", nota.getNt2()) : "--");
                 tvNt3.setText(nota.getNt3() != null ? String.format("%.1f", nota.getNt3()) : "--");
+                
+                // ATUALIZAR situação baseada nos dados reais
+                tvSituacao.setText(nota.getSituacao());
+                configurarCorSituacao(tvSituacao, nota.getSituacao());
                 break;
             }
         }
 
-        // Carregar faltas - usar método padrão se o novo método não existir
-        List<Falta> faltas;
-        try {
-            faltas = repository.getFaltasComCalculoCorreto(periodoAtual);
-        } catch (Exception e) {
-            // Fallback para método padrão se o novo método não existir
-            faltas = repository.getFaltasByPeriodo(periodoAtual);
-            // Aplicar cálculos manualmente
-            for (Falta falta : faltas) {
-                falta.calcularTotalFaltas();
-                falta.calcularPercentual(75.0);
-            }
-        }
+        // Carregar faltas FILTRADAS por disciplinaId específico
+        List<Falta> faltas = repository.getFaltasByPeriodo(periodoAtual, usuarioId);
         
         for (Falta falta : faltas) {
             if (falta.getDisciplinaId() == disciplinaId) {
@@ -118,16 +126,8 @@ public class DetalhesNotaActivity extends AppCompatActivity {
                 tvPercentualFaltas.setText(String.format("%.1f%%", falta.getPercentual()));
                 configurarCorFaltas(tvPercentualFaltas, falta.getStatusFaltas());
                 
-                // Adicionar indicador se pode reprovar por falta
-                try {
-                    if (falta.podeReprovarPorFalta()) {
-                        tvPercentualFaltas.append(" ⚠️");
-                    }
-                } catch (Exception e) {
-                    // Método pode não existir ainda, usar cálculo manual
-                    if (falta.getPercentual() >= 25.0) {
-                        tvPercentualFaltas.append(" ⚠️");
-                    }
+                if (falta.podeReprovarPorFalta()) {
+                    tvPercentualFaltas.append(" ⚠️");
                 }
                 break;
             }

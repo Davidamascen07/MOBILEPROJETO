@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FaltasFragment extends Fragment {
+    
+    private static final boolean MOSTRAR_PERIODO_ANTERIOR = true;
+    
     private RecyclerView recyclerViewFaltas;
     private FaltasAdapter faltasAdapter;
     private Repository repository;
@@ -54,22 +57,47 @@ public class FaltasFragment extends Fragment {
 
     private void loadFaltas() {
         String periodoAtual = prefsManager.getPeriodoSelecionado();
-        List<Falta> faltas = repository.getFaltasByPeriodo(periodoAtual);
-        List<Disciplina> disciplinas = repository.getAllDisciplinas();
+        int usuarioId = prefsManager.getUserId();
         
-        // Debug: verificar se dados estão sendo carregados
-        android.util.Log.d("FaltasFragment", "Período: " + periodoAtual);
-        android.util.Log.d("FaltasFragment", "Faltas encontradas: " + faltas.size());
-        android.util.Log.d("FaltasFragment", "Disciplinas encontradas: " + disciplinas.size());
-        
-        // Se não há dados, tentar forçar reset
-        if (faltas.isEmpty()) {
-            android.util.Log.d("FaltasFragment", "Forçando reset dos dados...");
-            repository.forceResetData();
-            faltas = repository.getFaltasByPeriodo(periodoAtual);
+        // Validar se usuário está logado
+        if (usuarioId == -1) {
+            android.util.Log.e("FaltasFragment", "Usuário não encontrado");
+            return;
         }
         
-        // Corrigir construtor: Context, List<Falta>, List<Disciplina>
+        // CORRIGIR: Atualizar percentuais antes de carregar dados
+        repository.atualizarPercentuaisComCargaCorreta();
+        
+        // USAR método que recalcula status corretamente
+        List<Falta> faltas = repository.getFaltasComCalculoCorreto(periodoAtual, usuarioId);
+        
+        if (MOSTRAR_PERIODO_ANTERIOR && faltas.isEmpty()) {
+            // Se não há dados para o período atual, tentar período anterior
+            String periodoAnterior = "2024.2";
+            faltas = repository.getFaltasComCalculoCorreto(periodoAnterior, usuarioId);
+        }
+        
+        List<Disciplina> disciplinas = repository.getAllDisciplinas();
+        
+        // Debug: verificar status das faltas com carga horária
+        for (Falta falta : faltas) {
+            Disciplina disciplina = null;
+            for (Disciplina d : disciplinas) {
+                if (d.getId() == falta.getDisciplinaId()) {
+                    disciplina = d;
+                    break;
+                }
+            }
+            
+            if (disciplina != null) {
+                android.util.Log.d("FaltasFragment", String.format(
+                    "%s: %s", disciplina.getNome(), 
+                    falta.getDebugInfo(disciplina.getCargaHoraria())
+                ));
+            }
+        }
+        
+        // Construtor correto: Context, List<Falta>, List<Disciplina>
         faltasAdapter = new FaltasAdapter(getContext(), faltas, disciplinas);
         recyclerViewFaltas.setAdapter(faltasAdapter);
     }

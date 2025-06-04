@@ -1,40 +1,118 @@
 package com.example.mobiliap3.models;
 
 public class Historico {
-    private String periodo;           // "6º PERÍODO"
-    private String disciplinaNome;    // Nome da disciplina
-    private String periodoLetivo;     // "2024.1"
-    private String situacao;          // "APROVADO", "REPROVADO", "CURSANDO"
+    private int id;
+    private int disciplinaId; // ADICIONAR para facilitar navegação
+    private String disciplinaNome; // DEVE SER STRING para armazenar o nome da disciplina
+    private String periodo;
+    private String situacao;
     private double notaFinal;
     private int totalFaltas;
+    private double frequencia;
 
+    // Construtores
     public Historico() {}
 
-    public Historico(String periodo, String disciplinaNome, String periodoLetivo, String situacao, double notaFinal, int totalFaltas) {
-        this.periodo = periodo;
+    public Historico(int id, String disciplinaNome, String periodo, String situacao, 
+                    double notaFinal, int totalFaltas, double frequencia) {
+        this.id = id;
         this.disciplinaNome = disciplinaNome;
-        this.periodoLetivo = periodoLetivo;
+        this.periodo = periodo;
         this.situacao = situacao;
         this.notaFinal = notaFinal;
         this.totalFaltas = totalFaltas;
+        this.frequencia = frequencia;
+    }
+
+    // ADICIONAR construtor com disciplinaId
+    public Historico(int id, int disciplinaId, String disciplinaNome, String periodo, String situacao, 
+                    double notaFinal, int totalFaltas, double frequencia) {
+        this.id = id;
+        this.disciplinaId = disciplinaId;
+        this.disciplinaNome = disciplinaNome;
+        this.periodo = periodo;
+        this.situacao = situacao;
+        this.notaFinal = notaFinal;
+        this.totalFaltas = totalFaltas;
+        this.frequencia = frequencia;
     }
 
     // Getters e Setters
-    public String getPeriodo() { return periodo; }
-    public void setPeriodo(String periodo) { this.periodo = periodo; }
+    public int getId() {
+        return id;
+    }
 
-    public String getDisciplinaNome() { return disciplinaNome; }
-    public void setDisciplinaNome(String disciplinaNome) { this.disciplinaNome = disciplinaNome; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getPeriodoLetivo() { return periodoLetivo; }
-    public void setPeriodoLetivo(String periodoLetivo) { this.periodoLetivo = periodoLetivo; }
+    public int getDisciplinaId() {
+        return disciplinaId;
+    }
 
-    public String getSituacao() { return situacao; }
-    public void setSituacao(String situacao) { this.situacao = situacao; }
+    public void setDisciplinaId(int disciplinaId) {
+        this.disciplinaId = disciplinaId;
+    }
 
-    public double getNotaFinal() { return notaFinal; }
-    public void setNotaFinal(double notaFinal) { this.notaFinal = notaFinal; }
+    public String getDisciplinaNome() { // RETORNA STRING
+        return disciplinaNome;
+    }
 
-    public int getTotalFaltas() { return totalFaltas; }
-    public void setTotalFaltas(int totalFaltas) { this.totalFaltas = totalFaltas; }
+    public void setDisciplinaNome(String disciplinaNome) { // ACEITA STRING
+        this.disciplinaNome = disciplinaNome;
+    }
+
+    public String getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
+    }
+
+    public String getSituacao() {
+        return situacao;
+    }
+
+    public void setSituacao(String situacao) {
+        this.situacao = situacao;
+    }
+
+    public double getNotaFinal() {
+        return notaFinal;
+    }
+
+    public void setNotaFinal(double notaFinal) {
+        this.notaFinal = notaFinal;
+    }
+
+    public int getTotalFaltas() {
+        return totalFaltas;
+    }
+
+    public void setTotalFaltas(int totalFaltas) {
+        this.totalFaltas = totalFaltas;
+    }
+
+    public double getFrequencia() {
+        return frequencia;
+    }
+
+    public void setFrequencia(double frequencia) {
+        this.frequencia = frequencia;
+    }
+
+    @Override
+    public String toString() {
+        return "Historico{" +
+                "id=" + id +
+                ", disciplinaId=" + disciplinaId +
+                ", disciplinaNome='" + disciplinaNome + '\'' +
+                ", periodo='" + periodo + '\'' +
+                ", situacao='" + situacao + '\'' +
+                ", notaFinal=" + notaFinal +
+                ", totalFaltas=" + totalFaltas +
+                ", frequencia=" + frequencia +
+                '}';
+    }
 }
